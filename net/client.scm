@@ -1,0 +1,12 @@
+ ; client.scm
+(declare (uses tcp))
+(define-values (i o) (tcp-connect "localhost" 4242))
+(define ch (read-line i))
+(print ch)
+(define (cli-iter)
+  (write-line (read) o)
+  (define ch (read-line i))
+  (print ch)
+  (if (not (string=? ch "bye"))
+    (cli-iter)))
+(cli-iter)

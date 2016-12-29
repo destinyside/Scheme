@@ -1,0 +1,16 @@
+(begin
+  (display  "To get the n power of x")
+  (newline)
+  (define (f x n)
+    (if (= n 0) 1
+      (* x (f x (- n 1)))))
+  (display "Please input a n")
+  (newline)
+  (define n (read))
+  (display  "Please input a x")
+  (newline)
+  (define x (read))
+  (display  "The answer is:")
+  (display (f x n))
+  (newline)
+  )

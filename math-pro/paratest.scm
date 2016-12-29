@@ -1,0 +1,12 @@
+(define (ndisplay x)(display x) (newline))
+(define (test x)
+  (cond
+    ((string? x) (ndisplay "String"))
+    ((symbol? x) (ndisplay "Symbol"))
+    ((list? x) (ndisplay "List"))
+    ((number? x) (ndisplay "Number"))
+    ((char? x) (ndisplay "Char"))
+    ((boolean? x) (ndisplay "Boolean"))
+    ((vector? x) (ndisplay "Vector"))
+    ((pair? x) (ndisplay "Pair"))
+    ((procedure? x) (ndisplay "Procedure"))))

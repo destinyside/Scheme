@@ -1,0 +1,5 @@
+(define (shown n)
+  (if (> n 0) (display n))
+  (newline)
+  (if (> n 0) (shown (- n 1))))
+(shown (read))

@@ -9,22 +9,7 @@
 ;Surprisingly, bouncy numbers become more and more common and by the time we reach 21780 the proportion of bouncy numbers is equal to 90%.
 
 ;Find the least number for which the proportion of bouncy numbers is exactly 99%.
-
-(define (char->number n)
-  (cond
-    ((eq? n #\0) 0)
-    ((eq? n #\1) 1)
-    ((eq? n #\2) 2)
-    ((eq? n #\3) 3)
-    ((eq? n #\4) 4)
-    ((eq? n #\5) 5)
-    ((eq? n #\6) 6)
-    ((eq? n #\7) 7)
-    ((eq? n #\8) 8)
-    ((eq? n #\9) 9)
-    (else (display "can not change"))
-    )
-  )
+(include "eulerch2num.scm")
 (define (increase? l)
   (cond
     ((eq? l '()) #t)

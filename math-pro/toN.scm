@@ -1,4 +1,4 @@
-;It can convert decimal numbers to other formats,such as hex,octal and binary 
+;It can convert decimal numbers to other formats,such as hex,octal and binary.
 
 (define (to n num)
   (define p '())

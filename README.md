@@ -7,4 +7,6 @@ $ make PLATFORM=android
 $ make PLATFORM=android install
 $ csi
 
-All these scheme files were tested by Chicken scheme. I wrote them on my android phone with the Termux.
+Termux.
+Maybe use Linux Deploy is better.
+Maybe use guile or gambit-c is better.

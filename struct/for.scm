@@ -1,22 +1,27 @@
+;;; a for macro
+
 (define-syntax for
-  (syntax-rules 
+  (syntax-rules
     (in)
-    ((_ (a b) c)
-     (begin
-       (define (iter i)
-	    (if (< i b)
-	      (begin
-		c
-		(iter (+ i 1)))))
-       (iter a))
-     )
-    ((_ (a) c) (for (0 a) c))
-    ((_ (i in b) c) 
-     (for-each 
-       (lambda (x)
-	 (let ((i x))
-	   c))
-	       b)
-     ) 
-    )
-  )
+    ((_ (mn mx) body)
+     (cond
+       ((< mx mn) #f)
+       (else
+	 (do 
+	   ((i mn (+ i 1)))
+	   ((= i mx))
+	   body))))
+    ((_ (n) body)
+     (cond
+       ((> n 0)
+	(for (0 n) body))
+       (else
+	 (for (n 0) body))))
+    ((_ (i in lst) body)
+       (for-each
+	 (lambda (x)
+	   (let ((i x))
+	   body)
+	   )
+	 lst))
+    ))

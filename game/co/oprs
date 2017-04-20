@@ -1,5 +1,9 @@
-'int 0 5
-'red 0 0
-'sto 0 0
-'lod 0 0
-'wrt 0 0
+int 0 1
+red 0 0
+sto 0 0
+lit 0 1
+lod 0 0
+sub 0 0
+wrt 0 0
+jpc 0 1
+wrt 0 0

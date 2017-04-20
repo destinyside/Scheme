@@ -1,0 +1,1 @@
+(display (cdr (argv)))

@@ -1,0 +1,8 @@
+(("Title" . test) ("Artist" . test) ("Rating" . 123) ("Ripped" . #t))
+(("Title" . new) ("Artist" . world) ("Rating" . 123) ("Ripped" . #t))
+(("Title" . hope) ("Artist" . this) ("Rating" . 220) ("Ripped" . #t))
+(("Title" . life) ("Artist" . my) ("Rating" . 220) ("Ripped" . #f))
+(("Title" . oracle) ("Artist" . oracle) ("Rating" . 220) ("Ripped" . #t))
+(("Title" . harmful) ("Artist" . new) ("Rating" . 450) ("Ripped" . #f))
+(("Title" . kim) ("Artist" . kk) ("Rating" . 220) ("Ripped" . #t))
+(("Title" . fly) ("Artist" . gg) ("Rating" . 220) ("Ripped" . #f))

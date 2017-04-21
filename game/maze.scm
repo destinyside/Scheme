@@ -1,5 +1,63 @@
-(load "../struct/stackfp.scm")
-(load "../struct/for.scm")
+;;;#lang r5rs
+
+(define-syntax for
+  (syntax-rules
+    (in)
+    ((_ (mn mx) body)
+     (cond
+       ((< mx mn) #f)
+       (else
+	 (do 
+	   ((i mn (+ i 1)))
+	   ((= i mx))
+	   body))))
+    ((_ (n) body)
+     (cond
+       ((> n 0)
+	(for (0 n) body))
+       (else
+	 (for (n 0) body))))
+    ((_ (i in lst) body)
+       (for-each
+	 (lambda (x)
+	   (let ((i x))
+	   body)
+	   )
+	 lst))
+    ))
+(define (make-stack) '())
+
+;;; It works as below
+(define-syntax push
+  (syntax-rules ()
+    ((_) #f)
+    ((_ stack) #f)
+    ((_ stack value ...)
+     (set! stack (append (list value ...) stack)))
+    ))
+
+(define-syntax pop
+  (syntax-rules
+    ()
+    ((_) #f)
+    ((_ stack)
+     (cond
+       ((null? stack) #f)
+       (else
+	 (begin
+	   (let ((i (car stack)))
+	     (set! stack (cdr stack))
+	     i
+	     )
+	   )
+	 )
+       ))))
+
+(define (empty? stack)
+  (null? stack))
+
+
+
 
 ;;; an input func with a tip
 (define (prompt tip)
@@ -18,6 +76,7 @@
 
 ;;; the length of the maze square
 (define len 0)
+(define mz 0)
 
 ;;; make a maze . a maze should let 0s as path and 1s as wall, the top left corner and the opposite shoule be 0.
 ;;; it seems like below : 
@@ -29,15 +88,15 @@
   (set! len (prompt "Input length : "))
   (display "Input the maze : ")
   (newline)
-  (define maze (make-vector len))
-  (for (i in (make-sequence len))
-       (begin
-	 (vector-set! maze i (make-vector len))
-	 (for (j in (make-sequence len))
-	      (vector-set! (vector-ref maze i) j (read))
-	      )
-	 ))
-  maze)
+  (set! mz (make-vector len))
+    (for (i in (make-sequence len))
+	 (begin
+	   (vector-set! mz i (make-vector len))
+	   (for (j in (make-sequence len))
+		(vector-set! (vector-ref mz i) j (read))
+		)
+	   ))
+    mz)
 
 (define maze (make-maze))
 
@@ -101,15 +160,16 @@
 	  (newline)
 	  (if (empty? path)
 	    (begin
-	    (display "There is no path to the end!")
-	    (set! i (- len 1))
-	    (set! j (- len 1)))
-	    (begin
-	      (define pos (pop path))
+	      (display "There is no path to the end!")
+	      (set! i (- len 1))
+	      (set! j (- len 1)))
+	    (let
+	      ((pos (pop path)))
 	      (vector-set! (vector-ref maze i) j -1)
 	      (set! i (car pos))
 	      (set! j (cdr pos))
-	      ))))
-	)))
+	      )
+	    )))
+      )))
 
 (find-path maze)

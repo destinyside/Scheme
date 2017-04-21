@@ -1,7 +1,55 @@
 ;; an interpreter of c0
-(load "../../struct/stackfp.scm")
+
+;; for racket
+ #lang r5rs
+
+;; for guile
+;; (define eval primitive-eval)
+
+(define (make-stack) '())
+
+(define-syntax push
+  (syntax-rules ()
+    ((_) #f)
+    ((_ stack) #f)
+    ((_ stack value ...)
+     (set! stack (append (list value ...) stack)))
+    ))
+
+(define-syntax pop
+  (syntax-rules
+    ()
+    ((_) #f)
+    ((_ stack)
+     (cond
+       ((null? stack) #f)
+       (else
+	 (begin
+	   (let ((i (car stack)))
+	     (set! stack (cdr stack))
+	     i
+	     )
+	   )
+	 )
+       ))))
+
+(define (empty? stack)
+  (null? stack))
+
+(define (file rw filename)
+  (case rw
+    ((r) 
+     (open-input-file filename))
+    ((w)
+     (open-output-file filename))
+    (else
+      (display "Unknown operation"))))
+
+
+(define v 0)
+
 (define (make-list num)
-  (define v (make-vector num))
+  (set! v (make-vector num))
   (vector-fill! v 0)
   (vector->list v))
 
@@ -18,6 +66,7 @@
 (define ins '())
 (define ptr #f)
 (define iter 0)
+(define len 0)
 
 (define stk '())
 (define top '())
@@ -44,7 +93,6 @@
 (define (red lv act)
   (push top (read))
   )
-
 (define (lit lv act)
   (push top act))
 
@@ -55,22 +103,25 @@
     ((1)
      (push top (list-ref global act)))))
 
+(define now '())
+(define now-top '())
+
 (define (sto lv act)
   (case lv
     ((0) 
      (begin
-       (define now (pop stk))
-       (define now-top (pop top))
+       (set! now (pop stk))
+       (set! now-top (pop top))
        (push stk (list-set! now act now-top))))
     ((1)
      (begin
-       (define now-top (pop top))
+       (set! now-top (pop top))
        (set! global (list-set! global act now-top))))))
 
 (define (ret lv act)
   (pop stk)
   (if (empty? stk)
-    (exit))
+    (set! iter len))
   (set! ptr (list-ref ins iter))
   (eval ptr)
   )
@@ -91,7 +142,6 @@
   (if (not (= 0 (car top)))
     (set! iter act)))
 
-(load "../../test/fileop.scm")
 (define (load-oprs filepath)
   (define opr (file 'r filepath))
   (do ((op 0 (read opr)) 
@@ -104,16 +154,16 @@
   (load-oprs "oprs")
   (set! ins (reverse ins))
   (pop ins)
+  (set! len (length ins))
   (do ((i 0 (+ i 0)))
-    ((= iter (length ins)))
+    ((>= iter len))
     (set! ptr (list-ref ins iter))
     (display ptr)
     (newline)
-    (eval ptr)
+    (force (delay ptr))
     (set! iter (+ iter 1)))
   )
 
 (exec)
-
 
 

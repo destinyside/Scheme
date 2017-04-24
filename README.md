@@ -1,12 +1,14 @@
 # Scheme
 
-if you are using android, you can download Termux and the Chicken scheme package, then you can use the Chicken scheme through following commands:
-$ tar xzvf chi*
-$ cd chi*
-$ make PLATFORM=android
-$ make PLATFORM=android install
-$ csi
+if you are using **Android**, you can download **Termux** , then you can use the **Chicken Scheme** through following commands:
+1. $ apt update
+2. $ apt install clang make wget
+3. $ wget https://code.call-cc.org/releases/4.12.0/chicken-4.12.0.tar.gz
+4. $ tar xzvf chi*
+5. $ cd chi*
+6. $ make PLATFORM=android
+7. $ make PLATFORM=android install
+8. $ csi
 
-Termux.
-Maybe use Linux Deploy is better.
-Maybe use guile or gambit-c is better.
+- **Termux** is useful.
+- Maybe use **Linux Deploy** is better.

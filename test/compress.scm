@@ -8,7 +8,7 @@
   (cond
     ((null? b)
      (if (= n 1)
-       a
+       (list a)
        (list n a)))
     ((not (list? b))
      (if (= n 1)
@@ -25,11 +25,15 @@
     (and (number? (car p)) (number? (cadr p)))
     #f))
 
+(define (list-of n p)
+  (let ((tmp (make-vector n)))
+    (vector->list (vector-fill! tmp p))))
+
 (define (uncompress x)
   (cond
     ((null? x) x)
     ((number-pair? x) 
-     (vector->list (vector-fill! (make-vector (car x)) (cadr x))))
+     (list-of (car x) (cadr x)))
     (else
       (uncompr (car x) (cdr x)))))
 
@@ -38,7 +42,7 @@
     ((null? b)
      (list a))
     ((number? b)
-     (append (uncompress a) b))
+     (list (uncompress a) b))
     ((number? a)
      (append (list a) (uncompr (car b) (cdr b))))
     ((number-pair? a)

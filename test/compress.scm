@@ -9,7 +9,7 @@
     ((null? b)
      (if (= n 1)
        (list a)
-       (list n a)))
+       (list (list n a))))
     ((not (list? b))
      (if (= n 1)
        (list a b)
@@ -26,8 +26,10 @@
     #f))
 
 (define (list-of n p)
-  (let ((tmp (make-vector n)))
-    (vector->list (vector-fill! tmp p))))
+  (if (> n 1)
+      (append (list p) (list-of (- n 1) p))
+      (list p)
+      ))
 
 (define (uncompress x)
   (cond
@@ -40,7 +42,7 @@
 (define (uncompr a b)
   (cond
     ((null? b)
-     (list a))
+     (uncompress a))
     ((number? b)
      (list (uncompress a) b))
     ((number? a)

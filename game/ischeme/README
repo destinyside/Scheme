@@ -1,0 +1,3 @@
+execute 
+    guile -L . -l main.scm
+to load the main.scm with libraries

@@ -158,10 +158,11 @@
   (do ((i 0 (+ i 0)))
     ((>= iter len))
     (set! ptr (list-ref ins iter))
+    (set! iter (+ iter 1)) 
     (display ptr)
     (newline)
     (eval ptr)
-    (set! iter (+ iter 1)))
+    )
   )
 
 (exec)

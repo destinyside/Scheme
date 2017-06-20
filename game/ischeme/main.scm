@@ -1,0 +1,22 @@
+(library (main)
+         (export exec)
+         (import (rnrs) (repl))
+
+         (define (exec)
+           (do ((i (read) (read)))
+               ((equal? i '(exit)) (exit))
+               (cond
+                 ((list? i) 
+                  (cond
+                    ((equal? (car i) '_+) (apply + (cdr i)))
+                    ((equal? (car i) '_-) (apply - (cdr i)))
+                    ((equal? (car i) '_*) (apply * (cdr i)))
+                    ((equal? (car i) '_/) (apply / (cdr i)))
+                    (else (display "none"))
+                    )
+                  )
+                 (else (display "no"))
+                 )
+               )
+           )
+         )

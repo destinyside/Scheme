@@ -1,10 +1,10 @@
 ;; an interpreter of c0
 
 ;; for racket
- #lang r5rs
+;; #lang r5rs
 
 ;; for guile
-;; (define eval primitive-eval)
+ (define eval primitive-eval)
 
 (define (make-stack) '())
 
@@ -158,10 +158,11 @@
   (do ((i 0 (+ i 0)))
     ((>= iter len))
     (set! ptr (list-ref ins iter))
+    (set! iter (+ iter 1)) 
     (display ptr)
     (newline)
-    (force (delay ptr))
-    (set! iter (+ iter 1)))
+    (eval ptr)
+    )
   )
 
 (exec)

@@ -1,9 +1,12 @@
-int 0 1
+int 0 2
 red 0 0
+red 0 0
+jmp 0 4
 sto 0 0
-lit 0 1
+sto 0 1
 lod 0 0
+lod 0 1
 sub 0 0
 wrt 0 0
-jpc 0 1
+jpc 0 1 
 wrt 0 0

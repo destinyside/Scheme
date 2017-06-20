@@ -4,7 +4,7 @@
 ;; #lang r5rs
 
 ;; for guile
- (define eval primitive-eval)
+ ;(define eval primitive-eval)
 
 (define (make-stack) '())
 
@@ -157,7 +157,7 @@
   (set! len (length ins))
   (do ((i 0 (+ i 0)))
     ((>= iter len))
-    (set! ptr (list-ref ins iter))
+    (set! ptr (reverse (list-ref ins iter)));;;guile shoule remove the reverse
     (set! iter (+ iter 1)) 
     (display ptr)
     (newline)

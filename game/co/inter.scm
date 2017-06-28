@@ -4,7 +4,7 @@
 ;; #lang r5rs
 
 ;; for guile
- (define eval primitive-eval)
+(define eval primitive-eval)
 
 (define (make-stack) '())
 

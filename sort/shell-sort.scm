@@ -24,7 +24,7 @@
 ;;; switch the value of  i and i+step position's  element in the vector
 ;;; the step is decrementing
 (define (sorts step i vec)
-  ;;; (state step i vec)
+  (state step i vec)
   (if (< (+ i step) (vector-length vec))
     (begin
       (if (> 

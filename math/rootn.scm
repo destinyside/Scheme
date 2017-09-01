@@ -1,5 +1,5 @@
-(include "cbrt")
-(include "power")
+
+(include "power.scm")
 
 (define (rootn x n)
   (define (rootn-iter x n mini maxi)

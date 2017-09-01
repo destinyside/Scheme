@@ -1,5 +1,5 @@
 (define (facto x)
-  (if (< x 2) 1(* x (facto (- x 1)))))
+  (if (< x 2) 1 (* x (facto (- x 1)))))
 (define (bio a  n)
   (if (< a (+ n 1)) (display (/ (facto n) (* (facto (- n a)) (facto a)))))
   (display " ")
@@ -14,5 +14,5 @@
   (if (= x 0) 0 (tri 1 x))
   (if (> x 0) (act (read))))
 
-(act (read))
+;(act (read))
 

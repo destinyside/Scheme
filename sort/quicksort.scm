@@ -6,7 +6,7 @@
   (define last 0)
   (define key 0)
   (cond
-    ((>= low high) l)
+    ((>= low high) lst)
     (else
       (set! first low)
       (set! last high)

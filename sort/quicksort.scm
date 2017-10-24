@@ -1,7 +1,7 @@
 
 (load "list-set.scm")
 
-(define (quicksort lst low high)
+(define (qsort lst low high)
   (define first 0)
   (define last 0)
   (define key 0)
@@ -15,8 +15,8 @@
 	((>= first last)
 	 (begin
 	   (new-list-set! lst first key)
-	   (quicksort lst low (- first 1))
-	   (quicksort lst (+ first 1) high)
+	   (qsort lst low (- first 1))
+	   (qsort lst (+ first 1) high)
 	   )
 	 )
 	(do ()
@@ -33,5 +33,7 @@
     )
   )
 (define l '(2 3 1 5 4))
-(quicksort l 0 (- (length l) 1))
+(qsort l 0 (- (length l) 1))
 (begin (display l) (newline))
+	(define (quicksort lst)
+	 (qsort lst 0 (- (length lst) 1)))

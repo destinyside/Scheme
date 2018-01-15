@@ -18,13 +18,13 @@
   (foreign-procedure "do_socket" () int))
 
 (define bind
-  (foreign-procedure "do_bind" (int) int))
+  (foreign-procedure "do_bind" (int string) int))
 
 (define connect
-  (foreign-procedure "do_connect" (int) int))
+  (foreign-procedure "do_connect" (int string) int))
 
 (define accept 
-  (foreign-procedure "do_accept" (int) int))
+  (foreign-procedure "do_accept" (int string) int))
 
 (define listen
   (foreign-procedure "listen" (int int) int))
@@ -58,7 +58,7 @@
 
 (define accept-socket
   (lambda (sock)
-    (do ([temp (accept sock)])
+    (do ([temp (accept sock "0.0.0.0")])
       ((> temp 0) temp))))
 
 (define pkill
@@ -70,14 +70,14 @@
 (define setup-server-socket
   (lambda ()
     (let ([sock (check 'socket (socket))])
-      (check 'bind (bind sock))
+      (check 'bind (bind sock "0.0.0.0"))
       (check 'listen (listen sock 5))
       sock))) 
 
 (define setup-client-socket
   (lambda ()
     (let ([sock (check 'socket (socket))])
-      (check 'connect (connect sock))
+      (check 'connect (connect sock "0.0.0.0"))
       sock))) 
 
 #!eof
@@ -92,7 +92,7 @@
     (display "A client connected ...")
     (newline)
     (do ([data (do-recv client) (do-recv client)])
-      ((and (string? data) (string=? data "quit")) (begin (close client) (quit)))
+      ((and (string? data) (string=? data "quit")) (begin (close client) (exit)))
       (display data)
       (newline)
       (if (string=? data "")
@@ -110,7 +110,7 @@
   (do ([message (read) (read)])
     ((and (string? message) (string=? message "quit")) 
      (begin 
-       (do-send server "quit")
+       (do-send server "exit")
        (close server) 
        (quit)))
     (do-send server message)

@@ -9,17 +9,19 @@
   (let ([pid -1]
 	[count 0]
 	[port (current-output-port)])
-    (set! pid fork)
+    (set! pid (fork))
     (case pid
       ((< pid 0) (error 'fork "error in fork!"))
       ((= pid 0) 
        (begin
 	 (write "this is child!" port)
+	 (write pid port)
 	 (newline port)
 	 (set! count (+ count 1))))
       (else
        (begin
 	 (write "this is parent!" port)
+	 (write pid port)
 	 (newline port)
 	 (set! count (+ count 1)))))
     (write "the count is : " port)

@@ -8,10 +8,10 @@
                (cond
                  ((list? i) 
                   (cond
-                    ((equal? (car i) '+) (apply _+ (cdr i)))
-                    ((equal? (car i) '-) (apply _- (cdr i)))
-                    ((equal? (car i) '*) (apply _* (cdr i)))
-                    ((equal? (car i) '/) (apply _/ (cdr i)))
+                    ((equal? (car i) '+) (apply 'i+ (cdr i)))
+                    ((equal? (car i) '-) (apply 'i- (cdr i)))
+                    ((equal? (car i) '*) (apply 'i* (cdr i)))
+                    ((equal? (car i) '/) (apply 'i/ (cdr i)))
                     (else (display "none"))
                     )
                   )

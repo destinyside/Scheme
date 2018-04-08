@@ -1,8 +1,8 @@
 (library (repl)
-         (export _+ _- _* _/)
+         (export i+ i- i* i/)
          (import (rnrs))
 
-         (define-syntax _+
+         (define-syntax i+
            (lambda (x)
              (syntax-case 
                x ()
@@ -11,7 +11,7 @@
              )
            )
 
-         (define-syntax _-
+         (define-syntax i-
            (lambda (x)
              (syntax-case 
                x ()
@@ -20,7 +20,7 @@
              )
            )
 
-         (define-syntax _*
+         (define-syntax i*
            (lambda (x)
              (syntax-case 
                x ()
@@ -29,7 +29,7 @@
              )
            )
 
-         (define-syntax _/
+         (define-syntax i/
            (lambda (x)
              (syntax-case 
                x ()

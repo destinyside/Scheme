@@ -1,6 +1,26 @@
 (library (math)
-	 (export A C cbrt fact inte power rootn)
+	 (export A C cbrt fact inte power rootn
+		 line-ps line-pp line-si
+		 )
 	 (import (rnrs (6)))
+
+	 ;;line, the format of point-slope
+	 (define line-ps
+	   (lambda (x0 y0 k)
+	     (lambda (x)
+	       (+ (* k (- x x0)) y0))))
+
+	 ;;line, the format of point-point
+	 (define line-pp
+	   (lambda (x0 y0 x1 y1)
+	     (lambda (x)
+	       (+ (* ( / (- x x0) (- x1 x0)) (- y1 y0)) y0))))
+
+	 ;;line, the format of slope-intercept
+	 (define line-si
+	   (lambda (k b)
+	     (lambda (x)
+	       (+ (* k x) b))))
 
 	 (define (A n x)
 	   (* (C n x) (fact x)))

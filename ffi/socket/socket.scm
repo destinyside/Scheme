@@ -5,6 +5,18 @@
 (load-shared-object "./csocket.so")
 (load-shared-object "libc.so.6")
 
+(define server-addr "127.0.0.1")
+
+(define init-addr
+  (lambda (addr)
+    (set! server-addr addr)))
+
+(define init-buf
+  (foreign-procedure "init_buf" (int) void))
+
+(define init-port
+  (foreign-procedure "init_port" (int) void))
+
 (define strlen
   (foreign-procedure "strlen" (string) int))
 
@@ -67,18 +79,22 @@
     (kill pid sigterm)
     (void)))
 
+
 (define setup-server-socket
-  (lambda ()
+  (lambda (addr port)
+    (init-addr addr)
+    (init-port port)
     (let ([sock (check 'socket (socket))])
-      (check 'bind (bind sock "0.0.0.0"))
+      (check 'bind (bind sock server-addr))
       (check 'listen (listen sock 5))
-      sock))) 
+      sock)))
 
 (define setup-client-socket
-  (lambda ()
+  (lambda (addr port)
+    (init-port port)
     (let ([sock (check 'socket (socket))])
-      (check 'connect (connect sock "0.0.0.0"))
-      sock))) 
+      (check 'connect (connect sock addr))
+      sock)))
 
 #!eof
 

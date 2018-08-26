@@ -13,11 +13,19 @@
 #include <stdlib.h>  
 #include <unistd.h>  
 
-#define SERVER_PORT 9999  
-#define BUF_SIZE 200
+int BUF_SIZE=200;
+int SERVER_PORT=8888;
 
 //int send(SOCKET s, const char* buf, int len, int flags);
 //int recv(SOCKET s, char* buf, int len, int flags);
+
+void init_buf(int size){
+	BUF_SIZE=size;
+}
+
+void init_port(int port){
+	SERVER_PORT=port;
+}
 
 int do_error(int state, char* message){
 	if(state < 0){

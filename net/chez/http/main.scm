@@ -7,7 +7,7 @@
 (load "html-parser.scm")
 
 
-(init-buf 1000)
+(init-buf 2000)
 (let ([pid (setup-server-socket "0.0.0.0" 8080)])
   (display "Server started ...")
   (newline)
@@ -30,9 +30,9 @@
 			      "Content-Length: 500\r\n"
 			      "\r\n"
 			      "<!DOCTYPE html>" "<p>" "the data is null" "</p>"))
-      (close client)
+	;(close client)
       (set! data "quit"))
-    (newline))))
+    (newline)))
 
 
 

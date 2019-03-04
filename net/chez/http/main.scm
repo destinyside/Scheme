@@ -6,34 +6,43 @@
 (load "header-parser.scm")
 (load "html-parser.scm")
 
+(define operation 
+  (lambda (client)
+    (display "A client connected ...")
+    (newline)
+    (do ([data (do-recv client) (do-recv client)])
+      ((and (string? data) (string=? data "quit")) (begin (close client) (exit)))
+      (display data)
+      (newline) 
+      (let* ([html-data (string-append "<!DOCTYPE html><p>the data is " data "</p>")]
+	    [html-data-len (string-length html-data)])
+	(do-send client 
+		 (string-append "HTTP/1.1 200 OK\r\n"
+				"Cache-Control: public, max-age=60\r\n"
+				"Date: Sat, 10 Apr 2018 16:50:00 CST\r\n"
+				"Expires: Sat, 10 Apr 2018 17:00:00 CST\r\n"
+				"Vary: Accept-Encoding\r\n"
+				"Content-Type: text/html; charset=utf-8\r\n"
+				"Content-Length: " (number->string html-data-len) "\r\n"
+				"\r\n"
+				html-data
+				)))
+      )  	
+    (newline)))
+
 
 (init-buf 2000)
 (let ([pid (setup-server-socket "0.0.0.0" 8080)])
   (display "Server started ...")
   (newline)
   (do ([client 0])
-    ((null? client) (break))
+    ((= -1 client) (break))
     (set! client (accept-socket pid))
-    (display "A client connected ...")
-    (newline)
-    (do ([data (do-recv client) (do-recv client)])
-      ((and (string? data) (string=? data "quit")) (begin (close client) (exit)))
-      (display data)
-      (newline)
-      (do-send client 
-	       (string-append "HTTP/1.1 200 OK\r\n"
-			      "Cache-Control: public, max-age=60\r\n"
-			      "Date: Sat, 10 Apr 2018 16:50:00 CST\r\n"
-			      "Expires: Sat, 10 Apr 2018 17:00:00 CST\r\n"
-			      "Vary: Accept-Encoding\r\n"
-			      "Content-Type: text/html; charset=utf-8\r\n"
-			      "Content-Length: 500\r\n"
-			      "\r\n"
-			      "<!DOCTYPE html>" "<p>" "the data is null" "</p>"))
-	;(close client)
-      (set! data "quit"))
-    (newline)))
-
+    (dofork   ; child
+      (operation client)
+      (lambda (pid) ; parent
+	; the parent waits for a connection from the client
+	(set! client-pid pid)))))
 
 
 
@@ -105,8 +114,8 @@
 (define check
   (lambda (who x)
     (if (< x 0)
-	(perror (string-append "err : " (symbol->string who)))
-	x)))
+      (perror (string-append "err : " (symbol->string who)))
+      x)))
 
 (define accept-socket
   (lambda (sock)
@@ -151,10 +160,10 @@
       (display data)
       (newline)
       (if (string=? data "")
-	  (begin
-	    (close client)
-	    (quit))
-	  (do-send client (string-append "the data is " data)))
+	(begin
+	  (close client)
+	  (quit))
+	(do-send client (string-append "the data is " data)))
       (newline))))
 
 ;; the client

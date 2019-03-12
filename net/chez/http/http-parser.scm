@@ -38,39 +38,99 @@
 	       [rows '()])
 	(set! rows (iter data '() '()))
 
-	;(parse-first-row (car rows) http-table)
+	(parse-first-row (car rows) http-table)
 	;(display (hashtable-entries http-table))
-	;(parse-header-row (cdr rows) http-table)
+	(parse-header-rows (cdr rows) http-table)
+	(newline)
+	(map (lambda (x) (begin (display "|->") (display x) (newline))) (cdr rows))
+	(pretty-out http-table)
+	http-table
 	;(parse-data-row (cdr rows))
 	)))
+
   (define parse-first-row
     (lambda (row http-table)
       (let ([point 1]
 	    [temp '()])
 	(do ([index 0 (+ index 1)])
-	  ((= index (string-length row)))
+	  ((= index (string-length row)) 'first-row-end)
 	  (case (string-ref row index)
 	    ((#\space) (begin 
 			 (cond
 			   ((= point 1) (hashtable-set! http-table 'method (list->string temp)))
 			   ((= point 2) (hashtable-set! http-table 'uri (list->string temp)))
+			   ((= point 3) (hashtable-set! http-table 'version (list->string temp)))
 			   (else #f))
 			 (set! temp '())
 			 (set! point (+ point 1))))
-	    ((#\newline) (begin
-			   (hashtable-set! http-table 'version (list->string temp))
-			   (set! temp '())))
-	    (else (append temp (list (string-ref row index)))))))))
+	    ((#\return) (begin
+			  (hashtable-set! http-table 'version (list->string temp))))
+	    (else (set! temp (append temp (list (string-ref row index))))))
+	  )
+	http-table
+	)))
+
+  (define parse-header-rows
+    (lambda (rows http-table)
+      (if (null? rows)  '()
+	(begin
+	  (let* ([point 0]
+		 [temp '()]
+		 [row (car rows)]
+		 [row-length (string-length row)])
+	    (do ([index 0 (+ index 1)])
+	      ((or (= row-length 1) (= index row-length)) 'header-rows-end)
+	      (case (string-ref row index)
+		((#\:) (begin
+			 (if (= point 0)
+			   (begin
+			     (parse-header-row (list->string temp) (substring row (+ index 1) (string-length row)) http-table)
+			     (set! point (+ point 1))
+			     ) '() 
+			   )))
+		((#\space) 'header-rows-space)
+		(else (set! temp (append temp (list (string-ref row index))))))))
+	  (parse-header-rows (cdr rows) http-table)
+	  ))))
 
   (define parse-header-row
-    (lambda (rows http-table)
-      '()))
+    (lambda (header-name header-value http-table)
+      (letrec ([iter (lambda (char-list temp value-list)
+		       (if (null? char-list)
+			 (append value-list (list (list->string temp)))
+			 (case (car char-list)
+			   ((#\,) (iter (cdr char-list) '() (append value-list (list (list->string temp)))))
+			   ((#\space) (iter (cdr char-list) temp value-list))
+			   ((#\return) (iter (cdr char-list) temp value-list))
+			   (else (iter (cdr char-list) (append temp (list (car char-list))) value-list)))))]
+	       [header-values '()])
+	(display "|")
+	(display header-name)
+	(display "|")
+	(newline)
+	(case (string-upcase header-name) 
+	  (("USER-AGENT")
+	   (hashtable-set! http-table (string->symbol header-name) header-value))
+	  (else (begin
+		  (set! header-values (iter (string->list header-value) '() '()))
+		  (hashtable-set! http-table (string->symbol header-name) header-values))))
+	header-values
+	)))
 
-  (define parse-data-row
-    (lambda (rows)
-      '()))
-
+  (define pretty-out
+    (lambda (http-table)
+      (newline)
+      (letrec ([iter (lambda (lst)
+		       (if (null? lst)
+			 (begin
+			   (display 'end)
+			   (newline))
+			 (begin
+			   (display (car lst))
+			   (display " ")
+			   (display (hashtable-ref http-table (car lst) #f))
+			   (newline)
+			   (iter (cdr lst)))))])
+	(iter (vector->list (hashtable-keys http-table))))))
 
   )
-
-

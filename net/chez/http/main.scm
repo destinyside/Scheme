@@ -3,8 +3,15 @@
 
 ;;; socket from ffi/socket
 (load "./socket.so")
-(load "header-parser.scm")
+(load "http-parser.scm")
 (load "html-parser.scm")
+
+(import (http-parser))
+(import (html-parser))
+
+(define ip "0.0.0.0")
+(define port 8090)
+(define buf 2000)
 
 (define operation 
   (lambda (client)
@@ -12,9 +19,13 @@
     (newline)
     (do ([data (do-recv client) (do-recv client)])
       ((and (string? data) (string=? data "quit")) (begin (close client) (exit)))
-      (display data)
-      (newline) 
-      (let* ([html-data (string-append "<!DOCTYPE html><p>the data is " data "</p>")]
+      (let* ([http-table (http data)]
+	     [html-data (string-append 
+			  "<!DOCTYPE html><p>the data is " 
+			  "</p>" 
+			  "<div>"
+			  (ulist http-table)
+			  "</div>")]
 	    [html-data-len (string-length html-data)])
 	(do-send client 
 		 (string-append "HTTP/1.1 200 OK\r\n"
@@ -31,9 +42,13 @@
     (newline)))
 
 
-(init-buf 2000)
-(let ([pid (setup-server-socket "0.0.0.0" 8080)])
-  (display "Server started ...")
+(init-buf buf)
+(let ([pid (setup-server-socket ip port)])
+  (display "Server started at: ")
+  (display ip)
+  (display ":")
+  (display port)
+  (display " ……")
   (newline)
   (do ([client 0])
     ((= -1 client) (break))

@@ -72,11 +72,11 @@
 	 (define (tanh-derivative a-neuron in)
 	   (* (- 1 (pow (neuron-forward-output-value a-neuron) 2)) in))
 
-	 (define (back-propagative a-neuron in)
+	 (define (back-propagate a-neuron in)
 	   (case (neuron-type a-neuron)
 	     ('node-input in)
-	     ('node-hidden (tanh-derivative in))
-	     ('node-output (tanh-derivative in))
+	     ('node-hidden (tanh-derivative a-neuron in))
+	     ('node-output (tanh-derivative a-neuron in))
 	     (else 0.0)))
 
 	 (define-record-type counts 
@@ -128,7 +128,11 @@
 		   (lambda (x)
 		     (forward a-neuron-network (datanode-attributes x))
 		     (backward a-neuron-network (datanode-type x))
-		     (update-weights a-neuron-network eta))
+		     (update-weights a-neuron-network eta)
+
+		     ;(trace 'update-input-hidden-weights (neuron-network-input-hidden-weight a-neuron-network))
+		     ;(trace 'update-hidden-output-weights (neuron-network-hidden-output-weight a-neuron-network))
+		     )
 		   (neuron-network-train-nodes a-neuron-network))
 		 (display "n= ")
 		 (display i)
@@ -139,20 +143,19 @@
 	     (forward a-neuron-network (datanode-attributes test-node))
 	     (let ([result 2]
 		   [type 0]
-		   [i 0])
-	       (set! i 0)
-	       (call/cc 
-		 (lambda (cc)
-		   (for-each 
-		     (lambda (x)
-		       (if (< (- 1 (neuron-forward-output-value x)) result)
+		   [output-nodes (neuron-network-output-nodes a-neuron-network)]
+		   [len (length (neuron-network-output-nodes a-neuron-network))])
+		   (do ([i 0 (+ i 1)])
+		     ((= i len) 'break)
+		       (trace 'test-result1 result)
+		       (if (< (- 1 (neuron-forward-output-value (list-ref output-nodes i))) result)
 			   (begin
-			     (set! result (- 1 (neuron-forward-output-value x)))
-			     (set! type i)
-			     (cc type)))
-		       (set! i (+ i 1)))
-		     (neuron-network-output-nodes a-neuron-network))))
-	       type)))
+			     (set! result (- 1 (neuron-forward-output-value (list-ref output-nodes i))))
+			     (trace 'test-result2 result)
+			     (trace 'test-forward-output (neuron-forward-output-value (list-ref output-nodes i)))
+			     (set! type i)) 
+			   '()))
+		   type)))
 	 (define-syntax list-set!
 	   (lambda (x)
 	     (syntax-case x ()
@@ -176,58 +179,60 @@
 	 (define update-weights
 	   (lambda (a-neuron-network eta)
 	     (let ([input-hidden-weights (neuron-network-input-hidden-weight a-neuron-network)]
-	           [hidden-output-weights (neuron-network-hidden-output-weight a-neuron-network)]
+		   [hidden-output-weights (neuron-network-hidden-output-weight a-neuron-network)]
 		   [input-nodes (neuron-network-input-nodes a-neuron-network)]
 		   [output-nodes (neuron-network-output-nodes a-neuron-network)]
 		   [hidden-nodes (neuron-network-hidden-nodes a-neuron-network)])
 	       (let ([i 0]
 		     [j 0]
-		     [value 0])
+		     [value 0]
+		     [temp '()])
 		 (neuron-network-input-hidden-weight-set! 
 		   a-neuron-network 
 		   (map (lambda (x)
 			  (set! j 0)
-			  (map (lambda (y) 
-				 (set! value (- (list-ref (list-ref input-hidden-weights i) j)
-						(* eta 										   (neuron-forward-output-value (list-ref input-nodes i))
-		(neuron-backward-output-value (list-ref hidden-nodes j)))))
-				 (set! j (+ j 1))
-				 value) hidden-nodes)
+			  (set! temp (map (lambda (y) 
+					    (set! value (- (list-ref (list-ref input-hidden-weights i) j)
+							   (* eta 										   (neuron-forward-output-value (list-ref input-nodes i))
+							      (neuron-backward-output-value (list-ref hidden-nodes j)))))
+					    (set! j (+ j 1))
+					    value) hidden-nodes))
 			  (set! i (+ i 1))
-			  x) input-nodes))
+			  temp) input-nodes))
 		 (set! i 0)
 		 (set! j 0)
 		 (set! value 0)
+		 (set! temp '())
 		 (neuron-network-hidden-output-weight-set! 
 		   a-neuron-network 
 		   (map (lambda (x)
 			  (set! j 0)
-			  (map (lambda (y) 
-				 (set! value (- (list-ref (list-ref hidden-output-weights i) j)
-						(* eta 
-						   (neuron-forward-output-value (list-ref hidden-nodes i))
-						   (neuron-backward-output-value (list-ref output-nodes j)))))
-				 (set! j (+ j 1))
-				 value) output-nodes)
+			  (set! temp (map (lambda (y) 
+					    (set! value (- (list-ref (list-ref hidden-output-weights i) j)
+							   (* eta 
+							      (neuron-forward-output-value (list-ref hidden-nodes i))
+							      (neuron-backward-output-value (list-ref output-nodes j)))))
+					    (set! j (+ j 1))
+					    value) output-nodes))
 			  (set! i (+ i 1))
-			  x) hidden-nodes)))
-	       (trace 'update-weights a-neuron-network)
-	       
+			  temp) hidden-nodes)))
+
 	       )))
 
 	 (define forward
 	   (lambda (a-neuron-network a-list)
 	     ;;;;;
 	     (let ([i 0])
-	       (trace 'input-nodes (neuron-network-input-nodes a-neuron-network))
 	       (neuron-network-input-nodes-set!
 		 a-neuron-network
 		 (map
 		   (lambda (x)
 		     (neuron-forward-input-value-set! x (list-ref a-list i))
+		     (neuron-forward-output-value-set! x (forward-sigmoid x (list-ref a-list i)))
 		     (set! i (+ i 1))
 		     x)
 		   (neuron-network-input-nodes a-neuron-network))))
+	     ;(trace 'forward-input-value (neuron-network-input-nodes a-neuron-network))
 	     ;;
 	     (let ([j 0]
 		   [temp 0])
@@ -240,6 +245,7 @@
 					      (list-ref (apply map list (neuron-network-input-hidden-weight a-neuron-network)) j)
 					      (map neuron-forward-output-value (neuron-network-input-nodes a-neuron-network)))))
 		     (neuron-forward-input-value-set! x temp)
+		     (neuron-forward-output-value-set! x (forward-sigmoid x temp))
 		     (set! j (+ j 1))
 		     x)
 		   (neuron-network-hidden-nodes a-neuron-network))))
@@ -255,9 +261,12 @@
 					      (list-ref (apply map list (neuron-network-hidden-output-weight a-neuron-network)) j)
 					      (map neuron-forward-output-value (neuron-network-hidden-nodes a-neuron-network)))))
 		     (neuron-forward-input-value-set! x temp)
+		     (neuron-forward-output-value-set! x (forward-sigmoid x temp))
 		     (set! j (+ j 1))
 		     x)
-		   (neuron-network-output-nodes a-neuron-network))))))
+		   (neuron-network-output-nodes a-neuron-network))))
+
+	     ))
 
 	 (define backward
 	   (lambda (a-neuron-network type)
@@ -272,6 +281,7 @@
 			 (set! result 1)
 			 (set! result -1))
 		     (neuron-backward-input-value-set! x (- (neuron-backward-output-value x) result))
+		     (neuron-backward-output-value-set! x (back-propagate x (- (neuron-backward-output-value x) result)))
 		     (set! j (+ j 1))
 		     x)
 		   (neuron-network-output-nodes a-neuron-network))))
@@ -287,6 +297,7 @@
 					      (list-ref (neuron-network-hidden-output-weight a-neuron-network) j)
 					      (map neuron-backward-output-value (neuron-network-output-nodes a-neuron-network)))))
 		     (neuron-backward-input-value-set! x temp)
+		     (neuron-backward-output-value-set! x (back-propagate x temp))
 		     (set! j (+ j 1))
 		     x)
 		   (neuron-network-hidden-nodes a-neuron-network))))))
@@ -312,6 +323,5 @@
 	   (lambda (count1 count2)
 	     (let ([weight (make-list count1 (make-list count2 0))])
 	       (map (lambda (x) (map (lambda (y) (random 1.0)) x)) weight))))
-
 
 	 )

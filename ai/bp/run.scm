@@ -2,4 +2,4 @@
 
 (load "main.scm")
 (import (main))
-(exec)
+(exec 0.1 1000)

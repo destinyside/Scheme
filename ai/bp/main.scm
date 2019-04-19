@@ -4,10 +4,10 @@
 	   exec
 	   )
 	 (import (rnrs) (back-propagation-neural-network))
-
-	 (define (exec)
-	   (let* ([eta 0.01]
-		  [iter 1000]
+	 
+	 (define (exec eta iter)
+	   (let* ([eta eta]
+		  [iter iter]
 		  [attribute-count 4]
 		  [hidden-count (+ attribute-count 8)]
 		  [type-count 3]

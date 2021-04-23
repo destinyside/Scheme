@@ -14,8 +14,8 @@ SCM=socket.scm
 ORIGIN_PWD=$(PWD)
 Scheme=/usr/bin/scheme -q
 build: 
-	(cd $(ORIGIN_PWD)/$(SOURCE_DIR) && $(MAKE) && cp *.so $(ORIGIN_PWD))
+	(cd $(ORIGIN_PWD)/$(SOURCE_DIR) && $(MAKE) clean && $(MAKE) && cp *.so $(ORIGIN_PWD))
 	(cd $(ORIGIN_PWD))
 
 clean:
-	rm *.so
+	rm -f *.so

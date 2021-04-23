@@ -19,12 +19,19 @@
 
 (library
   (http-parser)
-  (export http)
+  (export http http?)
   (import (rnrs))
   (define http
     (lambda (data)
       (convert (string->list data))))
   ;(hashtable-set! headers 'a 73)
+
+  ;; todo
+  (define http?
+	(lambda (data)
+		(and (not (or (null? data) (string=? "" data))) (pair? (string->list data)) )
+	)
+  )
 
   (define convert 
     (lambda (data)
@@ -41,9 +48,9 @@
 	(parse-first-row (car rows) http-table)
 	;(display (hashtable-entries http-table))
 	(parse-header-rows (cdr rows) http-table)
-	(newline)
-	(map (lambda (x) (begin (display "|->") (display x) (newline))) (cdr rows))
-	(pretty-out http-table)
+	;;(newline)
+	;;(map (lambda (x) (begin (display "|->") (display x) (newline))) (cdr rows))
+	;;(pretty-out http-table)
 	http-table
 	;(parse-data-row (cdr rows))
 	)))
@@ -67,7 +74,7 @@
 			  (hashtable-set! http-table 'version (list->string temp))))
 	    (else (set! temp (append temp (list (string-ref row index))))))
 	  )
-	http-table
+	;;http-table
 	)))
 
   (define parse-header-rows
@@ -91,7 +98,7 @@
 		((#\space) 'header-rows-space)
 		(else (set! temp (append temp (list (string-ref row index))))))))
 	  (parse-header-rows (cdr rows) http-table)
-	  ))))
+	))))
 
   (define parse-header-row
     (lambda (header-name header-value http-table)
@@ -104,17 +111,17 @@
 			   ((#\return) (iter (cdr char-list) temp value-list))
 			   (else (iter (cdr char-list) (append temp (list (car char-list))) value-list)))))]
 	       [header-values '()])
-	(display "|")
-	(display header-name)
-	(display "|")
-	(newline)
+	;; (display "|")
+	;; (display header-name)
+	;; (display "|")
+	;; (newline)
 	(case (string-upcase header-name) 
 	  (("USER-AGENT")
 	   (hashtable-set! http-table (string->symbol header-name) header-value))
 	  (else (begin
 		  (set! header-values (iter (string->list header-value) '() '()))
 		  (hashtable-set! http-table (string->symbol header-name) header-values))))
-	header-values
+		;; header-values
 	)))
 
   (define pretty-out

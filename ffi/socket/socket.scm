@@ -49,12 +49,22 @@
 
 (define do-send
   (lambda (sock msg)
-    (display (string-append "send a message : " msg))
-    (newline)
+    ;; (display (string-append "send a message : " msg))
+    ;; (newline)
     (send sock msg (strlen msg) 0)))
 
 (define do-recv
   (foreign-procedure "do_recv" (int) string))
+
+(define dofork
+ ; (dofork child parent) forks a child process and invokes child
+ ; without arguments and parent with the child's pid
+  (lambda (child parent)
+    (let ([pid (fork)])
+      (cond
+        [(= pid 0) (child)]
+        [(> pid 0) (parent pid)]
+        [else (error 'fork (c-error))]))))
 
 (define fork
   (foreign-procedure "fork" () int))
@@ -95,6 +105,7 @@
     (let ([sock (check 'socket (socket))])
       (check 'connect (connect sock addr))
       sock)))
+
 
 #!eof
 

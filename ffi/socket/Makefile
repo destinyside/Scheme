@@ -16,3 +16,6 @@ build: $(SRC)
 #	install $(TARGET) $(LIBDIR)
 	echo '(time (compile-file "$(SCM)"))' | $(Scheme)
 
+clean:
+	rm -f csocket.so
+
